@@ -74,16 +74,27 @@ var Accounts = React.createClass ({
 		});
 		var count = Number.parseInt(balance/payment);
 		var remBalance = Number.parseInt(balance);
-		for(var i = 0; i<count; i++) {
-			var label = ""+i+"";
+		for(var i = 0; i<=count; i++) {
+			var temp = i+1;
+			var label = ""+temp+"";
 			var value = ""+remBalance+"";
 			myDataSource.categories[0].category[i] = {label};
 			myDataSource.dataset[0].data[i] = {value};
 			remBalance = remBalance - payment; 
 		}
 	},
+	handleChange: function(e) {
+		this.setState({
+			balance: e.target.value
+		});
+	},
+	handlePaymentChange: function(e) {
+		this.setState({
+			payment: e.target.value
+		});
+	},
 	render: function() {
-		var {chart} = this.state;
+		var {chart, balance, payment} = this.state;
 		function renderReactFC () {
 			if(chart) {
 				return (
@@ -101,18 +112,18 @@ var Accounts = React.createClass ({
 					<p>Count: 2</p>
 					<p>
 						Balance
-						<input type="text" ref="balance" name="balance" />
+						<input type="text" ref="balance" name="balance" onChange={this.handleChange} />
 					</p>
 					<p><input type="submit" name="submt" /></p>
-					<p>Balance: 500</p>
-					<p>Balance: 5000</p>
+					<p>Balance: {balance}</p>
+					<p>Payment: {payment}</p>
 
 				</div>
 				<div className="large-10 small-8 columns">
-					<h4>Initial Balance: 5500</h4>
+					<h4>Initial Balance: {balance}</h4>
 					<p>
 						Monthly Payment:
-						<input type="text" ref="payment" name="monthlypayment" />
+						<input type="text" ref="payment" name="monthlypayment" onChange={this.handlePaymentChange} />
 					</p>
 					<strong>Balancce of accounts after a number of months</strong>
 					{/*<div id='charts-container'></div>*/}
