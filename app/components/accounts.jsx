@@ -9,6 +9,11 @@ charts(FusionCharts);
 var myDataSource = {
     chart: {
         "caption": "",
+        "showBorder": "0",
+        "bgColor": "#ffffff",
+        "showShadow": "0",
+        "canvasBgColor": "#ffffff",
+        "canvasBorderAlpha": "0",
         "theme": "ocean"
     },
     "categories": [
@@ -16,84 +21,18 @@ var myDataSource = {
             "category": [
                 {
                     "label": "1"
-                },
-                {
-                    "label": "2"
-                },
-                {
-                    "label": "3"
-                },
-                {
-                    "label": "4"
-                },
-                {
-                    "label": "5"
-                },
-                {
-                    "label": "6"
-                },
-                {
-                    "label": "7"
-                },
-                {
-                    "label": "8"
-                },
-                {
-                    "label": "9"
-                },
-                {
-                    "label": "10"
-                },
-                {
-                    "label": "11"
-                },
-                {
-                    "label": "12"
                 }
             ]
         }
     ],
     "dataset": [
         {
-            "seriesname": "Projected Revenue",
+            "seriesname": "Balance Remaining",
             "renderas": "line",
             "showvalues": "0",
             "data": [
                 {
                     "value": "5000"
-                },
-                {
-                    "value": "4550"
-                },
-                {
-                    "value": "4100"
-                },
-                {
-                    "value": "3650"
-                },
-                {
-                    "value": "3200"
-                },
-                {
-                    "value": "2750"
-                },
-                {
-                    "value": "1900"
-                },
-                {
-                    "value": "1900"
-                },
-                {
-                    "value": "2000"
-                },
-                {
-                    "value": "2100"
-                },
-                {
-                    "value": "2200"
-                },
-                {
-                    "value": "2300"
                 }
             ]
         },
@@ -112,28 +51,48 @@ var Accounts = React.createClass ({
 	getInitialState: function() {
 		return {
 			balance: 0,
-			payment: 0
+			payment: 0,
+			chart: undefined
 		}
 	},
 	componentDidMount: function () {
 		
-	 FusionCharts['debugger'].outputTo(function (message) {
-	    console.log(message);
-	});
-	FusionCharts['debugger'].enable(true);
+		FusionCharts['debugger'].outputTo(function (message) {
+		    console.log(message);
+		});
+		FusionCharts['debugger'].enable(true);
 	},
 	onFormSubmit: function (e) {
 		e.preventDefault();
-		
-		var balance = this.refs.balance.value;
-		var payment = this.refs.payment.value;
+
+		var balance = Number.parseInt(this.refs.balance.value);
+		var payment = Number.parseInt(this.refs.payment.value);
 		this.setState ({
 			balance: balance,
-			payment: payment
+			payment: payment,
+			chart: true
 		});
-		debugger;
+		var count = Number.parseInt(balance/payment);
+		var remBalance = Number.parseInt(balance);
+		for(var i = 0; i<count; i++) {
+			var label = ""+i+"";
+			var value = ""+remBalance+"";
+			myDataSource.categories[0].category[i] = {label};
+			myDataSource.dataset[0].data[i] = {value};
+			remBalance = remBalance - payment; 
+		}
 	},
 	render: function() {
+		var {chart} = this.state;
+		function renderReactFC () {
+			if(chart) {
+				return (
+					<div>
+					<ReactFC {...props_multi_chart} />
+					</div>
+				);
+			}
+		}
 		return (
 			<div>
 				<form onSubmit={this.onFormSubmit}>
@@ -156,8 +115,8 @@ var Accounts = React.createClass ({
 						<input type="text" ref="payment" name="monthlypayment" />
 					</p>
 					<strong>Balancce of accounts after a number of months</strong>
-					<div id='charts-container'></div>
-					<ReactFC {...props_multi_chart} />
+					{/*<div id='charts-container'></div>*/}
+					{renderReactFC()}
 				</div>
 				</form>
 			</div>
